@@ -12,7 +12,6 @@ const {
   BaseKonnector,
   requestFactory,
   signin,
-  scrape,
   saveBills,
   log
 } = require('cozy-konnector-libs')
@@ -63,38 +62,36 @@ function authenticate(username, password) {
 }
 
 function parseDocuments($) {
-  const docs = scrape(
-    $,
-    {
-      title: {
-        sel: 'h3 a',
-        attr: 'title'
-      },
-      amount: {
-        sel: '.price_color',
-        parse: normalizePrice
-      },
-      url: {
-        sel: 'h3 a',
-        attr: 'href',
-        parse: url => `${baseUrl}/${url}`
-      },
-      fileurl: {
-        sel: 'img',
-        attr: 'src',
-        parse: src => `${baseUrl}/${src}`
-      },
-      filename: {
-        sel: 'h3 a',
-        attr: 'title',
-        parse: title => `${title}.jpg`
+  log('info', 'parseDocuments')
+  let docs = []
+  const years = $('.main-content .sosve-accordion-inner-data')
+  for (let i = 0; i < years.length; i++) {
+    const year = $(years[i]).find('.donate-history-table.small')
+    const fileurl = $($(years[i]).find('a.download-recap-link')).attr('href')
+    const rows = $(year).find('tr')
+    rows.each((j, row) => {
+      const cells = $(row).find('td')
+      if (cells.length < 3) {
+        return
       }
-    },
-    'article'
-  )
+      const date = $(cells[0]).text()
+      let doc = {
+        title: 'Don du ' + date,
+        amount: normalizePrice($(cells[cells.length - 1]).text()),
+        date: normalizeDate(date)
+      }
+      if (fileurl) {
+        const parts = fileurl.split('/')
+        const y = parts[parts.length - 3]
+        const n = parts[parts.length - 2]
+        const filename = `${y}-${n}.pdf`
+        doc = { fileurl, filename, ...doc }
+      }
+      docs.push(doc)
+    })
+  }
   return docs.map(doc => ({
     ...doc,
-    date: new Date(),
     currency: '€',
     vendor: 'SOSVE',
     metadata: {
@@ -104,7 +101,11 @@ function parseDocuments($) {
   }))
 }
 
-// convert a price string to a float
 function normalizePrice(price) {
-  return parseFloat(price.replace('£', '').trim())
+  return parseFloat(price.replace('€', '').trim())
+}
+
+function normalizeDate(date) {
+  const parts = date.split('/')
+  return new Date(parts[2], parts[1], parts[0], 12)
 }
