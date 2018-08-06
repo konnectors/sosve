@@ -1,0 +1,41 @@
+language: node_js
+node_js:
+- '8'
+env:
+  global:
+  - GH_USER_EMAIL="travis@example.org"
+  - GH_USER_NAME="cozy-bot"
+  - DEPLOY_REPOSITORY="git@github.com:konnectors/sosve.git"
+  # REGISTRY_TOKEN for sosve
+  - secure: OJBm13oazGYEA331COmC3LRtezeIgem2nNjvtxybTnY6ZagbBdAi9i4jk8XzbPWNFqYMTVw6TfWtbVl+lpgY9+CX671Z1rZQAXsB+FOaziNzVO08Mwc1DCXCDZ1zY7Lo2MJ9W1juWD3sccMwxldBRJCRziFrC6nUTMBYHUBk9hVB+H57burpvWy4JhTGq1DHiflvaKK1k+UirG+7jYLpB09byfwZKAPNMza3P4iG1clgKNYqo4X7v0V7J7ceZ2oziHLwggq0STcQm1qcWHhzhWXpTGf3WUgG56EBdLEc460Emclme4nsPjxgCkPkE0XLwtl2OaneABeHQ6LnrI1m9246QLbE5na7KBFkJv4gm4/WOGJuXMVmIzC8z6h9RfUp0e/cJ9j0m8S/vdA6/60lJFKb76a6oyUy72S+pbRcRD29JRKjnbz27tqoaDDEz0XulUKUJyU2MPnwbxOhuv1NHHxbwwjQoltM7emlRFJeAtqL1kXGEcbMepUGcDUYQZ0zo81dtfH52Fgl8+rFgrah17b7rMPC1LtaAAgUM6LDJDsxXrJUWn9H5N4xku7Pj3DKN/7/R2v1lYSnhGmMwtlwgSex7FcW6ZF4nDdp/kKqUZCz2jlmX95vIMtIk3unrtLXx0+4gOgm/VdEaV7Fy+xygFOPlltBMYMAaYTyBhZd46I=
+cache:
+  yarn: true
+  directories:
+  - node_modules
+branches:
+  except:
+  - build
+  - latest
+script:
+- yarn lint
+- yarn build
+deploy:
+- provider: script
+  skip-cleanup: true
+  script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish
+  on:
+    branch: master
+- provider: script
+  skip-cleanup: true
+  script: DEPLOY_BRANCH=build yarn deploy && yarn cozyPublish
+  on:
+    tags: true
+before_install:
+- openssl aes-256-cbc -K $encrypted_1d3f53edc40c_key -iv $encrypted_1d3f53edc40c_iv
+  -in github_deploy_key.enc -out /tmp/github_deploy_key -d
+- eval "$(ssh-agent -s)"
+- chmod 600 /tmp/github_deploy_key
+- ssh-add /tmp/github_deploy_key
+after_deploy:
+- rm /tmp/github_deploy_key
+- ssh-add -D
