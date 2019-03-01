@@ -34,7 +34,7 @@
     "travisDeployKey": "./bin/generate_travis_deploy_key"
   },
   "dependencies": {
-    "cozy-konnector-libs": "4.14.6",
+    "cozy-konnector-libs": "4.14.9",
     "http-parser-js": "0.5.0"
   },
   "devDependencies": {
