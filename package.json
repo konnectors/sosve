@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "cozy-konnector-libs": "4.15.17",
-    "http-parser-js": "0.5.0"
+    "http-parser-js": "0.5.1"
   },
   "devDependencies": {
     "copy-webpack-plugin": "5.0.3",
