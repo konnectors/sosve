@@ -1,11 +1,11 @@
 {
-  "version": "1.2.0",
+  "version": "1.1.1",
   "name": "SOS Village d'enfants",
   "type": "konnector",
   "language": "node",
-  "icon": "icon.png",
+  "icon": "icon.svg",
   "slug": "sosve",
-  "source": "git@github.com:konnectors/sosve.git",
+  "source": "git://github.com/konnectors/sosve.git",
   "editor": "Cozy",
   "vendor_link": "https://www.sosve.org/",
   "categories": [
