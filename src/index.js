@@ -19,7 +19,8 @@ const {
   requestFactory,
   signin,
   saveBills,
-  log
+  log,
+  errors
 } = require('cozy-konnector-libs')
 const request = requestFactory({
   // debug: false,
@@ -33,6 +34,14 @@ const baseUrl = 'https://www.sosve.org/espace-donateur'
 module.exports = new BaseKonnector(start)
 
 async function start(fields) {
+  log('info', 'checking maintenance')
+  const resp = await request(baseUrl, {
+    resolveWithFullResponse: true
+  })
+  if (resp.request.uri.href.includes('maintenance')) {
+    throw new Error(errors.VENDOR_DOWN)
+  }
+
   log('info', 'Authenticating ...')
   await authenticate(fields.login, fields.password)
   log('info', 'Successfully logged in')
@@ -49,6 +58,7 @@ async function start(fields) {
 
 function authenticate(username, password) {
   return signin({
+    debug: true,
     url: `${baseUrl}/`,
     formSelector: '#loginform',
     formData: {
