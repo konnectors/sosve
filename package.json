@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "cozy-konnector-libs": "4.39.1",
-    "http-parser-js": "0.5.2"
+    "http-parser-js": "0.5.3"
   },
   "devDependencies": {
     "cozy-jobs-cli": "1.15.7",
