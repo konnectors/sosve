@@ -1,9 +1,3 @@
-// Force sentry DSN into environment variables
-// In the future, will be set by the stack
-process.env.SENTRY_DSN =
-  process.env.SENTRY_DSN ||
-  'https://cfb27fa844fd435ebdc1183d95a09291:4579111708ea4c30a1dd957943041adb@sentry.cozycloud.cc/88'
-
 // XXX The default HTTP parser of Node.js (in C++) is quite strict and does not
 // accept responses with 2 CONTENT_LENGTH headers (even with the same value).
 // The SOS Villages d'Enfants website does this on some response. A work-around is
